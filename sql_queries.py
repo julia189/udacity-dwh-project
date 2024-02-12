@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS staging_events (
         auth VARCHAR,
         firstName VARCHAR,
         gender CHAR,
-        iteminSession INTEGER,
+        itemInSession INTEGER,
         lastName VARCHAR,
         length float,
         level VARCHAR,
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS staging_events (
         status INTEGER,
         ts BIGINT,
         userAgent VARCHAR,
-        userId INTEGER                
+                 INTEGER                
 )
 """)
 
@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS staging_songs (
         artist_name VARCHAR,
         duration FLOAT,
         num_songs INTEGER,
+        song_id VARCHAR,
         title VARCHAR,
         year INTEGER
 )
@@ -56,12 +57,12 @@ CREATE TABLE IF NOT EXISTS staging_songs (
 
 songplay_table_create = ("""
 CREATE TABLE IF NOT EXISTS songplays (
-                         songplay_id VARCHAR(32) NOT NULL PRIMARY KEY,
+                         songplay_id VARCHAR(32) IDENTITY (1, 1) NOT NULL PRIMARY KEY,
                          start_time TIMESTAMP NOT NULL SORTKEY DISTKEY, 
                          user_id VARCHAR(32),
                          level INTEGER NOT NULL,
                          song_id VARCHAR(32),
-                         artist_id VARCHAR(32)  ,
+                         artist_id VARCHAR(32),
                          session_id VARCHAR(32) NOT NULL,
                          location VARCHAR(32) NOT NULL,
                          user_agent VARCHAR(32) NOT NULL
@@ -93,20 +94,20 @@ artist_table_create = ("""
 CREATE TABLE IF NOT EXISTS artist (
                        artist_id VARCHAR(32) NOT NULL PRIMARY KEY SORTKEY,
                        location VARCHAR(32) NOT NULL,
-                       latitude float NOT NULL,
-                       longitude float NOT NULL
+                       latitude FLOAT NOT NULL,
+                       longitude FLOAT NOT NULL
                   
 );
 """)
 
 time_table_create = ("""
 CREATE TABLE IF NOT EXISTS time (
-                     start_time date NOT NULL PRIMARY KEY SORTKEY DISTKEY,
-                     hour integer NOT NULL,
-                     day integer NOT NULL,
-                     week integer NOT NULL,
-                     month integer NOT NULL,
-                     year integer NOT NULL,
+                     start_time TIMESTAMP NOT NULL PRIMARY KEY SORTKEY DISTKEY,
+                     hour INTEGER NOT NULL,
+                     day INTEGER NOT NULL,
+                     week INTEGER NOT NULL,
+                     month INTEGER NOT NULL,
+                     year INTEGER NOT NULL,
                      weekday VARCHAR(32) NOT NULL
 );
 DISTSTYLE KEY;
@@ -126,23 +127,99 @@ COPY staging_songs
 FROM {}
 IAM_ROLE {}
 FORMAT AS json 'auto';
-""").format(config['S3']['SONG_DATA'], config['IAM_ROLE']['ARN'], config['S3'][])
+""").format(config['S3']['SONG_DATA'], config['IAM_ROLE']['ARN'], config['S3'])
 
 # FINAL TABLES
 
 songplay_table_insert = ("""
+    SELECT DISTINCT
+        CAST(se.ts as TIMESTAMP) as start_time,
+        se.userId as user_id,
+        se.level,
+        ss.song_id,
+        ss.artist_id,
+        se.sessionId as session_id,
+        se.location,
+        se.user_agent
+    FROM staging_songs as ss
+    INNER JOIN staging_events as se 
+    ON 
+        ss.title = se.song  
+    AND
+        ss.artist_name = se.artist 
+    AND 
+        se.page = 'NextSong'
 """)
 
+
 user_table_insert = ("""
+    SELECT DISTINCT
+        ss.userId as user_id,
+        se.firstName as first_name,
+        se.last_name,
+        se.gender,
+        se.level
+    FROM staging_songs as ss 
+    INNER JOIN staging_events as se
+    ON 
+        ss.title = se.song
+    AND 
+        ss.artist_name = se.artist
+    AND 
+        se.page = 'NextSong'
 """)
 
 song_table_insert = ("""
+   SELECT DISTINCT
+        ss.song_id,
+        ss.title,
+        ss.artist_id,
+        ss.year,
+        ss.duration
+   FROM staging_songs as ss
+   INNER JOIN staging_events as se
+   ON 
+        ss.title = se.song
+   AND
+        ss.artist_name = se.artist
+    AND 
+        se.page = 'NextSong'  
 """)
 
 artist_table_insert = ("""
+   SELECT DISTINCT
+        ss.artist_id,
+        ss.artist_name as name,
+        ss.artist_location as location,
+        ss.artist_latitude as latitude,
+        ss.artist_longitude as longitude
+   FROM staging_songs as ss
+   INNER JOIN staging_events as se
+   ON 
+        ss.title = se.song
+   AND
+        ss.artist_name = se.artist
+    AND 
+        se.page = 'NextSong'  
 """)
 
 time_table_insert = ("""
+   SELECT DISTINCT
+       CAST(se.ts as TIMESTAMP) as start_time,
+       EXTRACT(HOUR from CAST(se.ts as TIMESTAMP)) as hour,
+       EXTRACT(DAY from CAST(se.ts as TIMESTAMP)) as day,
+       EXTRACT(WEEK from CAST(se.ts as TIMESTAMP)) as week,
+       EXTRACT(MONTH from CAST(se.ts as TIMESTAMP)) as month,         
+       EXTRACT(YEAR from CAST(se.ts as TIMESTAMP)) as year,
+       EXTRACT(WEEKDAY from CAST(se.ts as TIMESTAMP)) as weekday              
+   FROM staging_songs as ss
+   INNER JOIN staging_events as se
+   ON 
+        ss.title = se.song
+   AND
+        ss.artist_name = se.artist
+    AND 
+        se.page = 'NextSong'  
 """)
 
 # QUERY LISTS
