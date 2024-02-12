@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS staging_songs (
 songplay_table_create = ("""
 CREATE TABLE IF NOT EXISTS songplays (
                          songplay_id INTEGER IDENTITY (1, 1) NOT NULL PRIMARY KEY,
-                         start_time TIMESTAMP NOT NULL SORTKEY, 
+                         start_time TIMESTAMP NOT NULL, 
                          user_id VARCHAR(32),
                          level INTEGER,
                          song_id VARCHAR(32),
