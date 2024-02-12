@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS time (
                      month INTEGER NOT NULL,
                      year INTEGER NOT NULL,
                      weekday VARCHAR(32) NOT NULL
-);
+)
 DISTSTYLE KEY
 DISTKEY (start_time)
 SORTKEY (start_time);
