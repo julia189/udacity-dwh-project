@@ -132,6 +132,7 @@ FORMAT AS json 'auto';
 # FINAL TABLES
 
 songplay_table_insert = ("""
+    INSERT INTO songplay
     SELECT DISTINCT
         CAST(se.ts as TIMESTAMP) as start_time,
         se.userId as user_id,
@@ -153,6 +154,7 @@ songplay_table_insert = ("""
 
 
 user_table_insert = ("""
+    INSERT INTO users
     SELECT DISTINCT
         ss.userId as user_id,
         se.firstName as first_name,
@@ -170,6 +172,7 @@ user_table_insert = ("""
 """)
 
 song_table_insert = ("""
+   INSERT INTO songs
    SELECT DISTINCT
         ss.song_id,
         ss.title,
@@ -187,6 +190,7 @@ song_table_insert = ("""
 """)
 
 artist_table_insert = ("""
+   INSERT INTO artists
    SELECT DISTINCT
         ss.artist_id,
         ss.artist_name as name,
@@ -204,6 +208,7 @@ artist_table_insert = ("""
 """)
 
 time_table_insert = ("""
+   INSERT INTO time
    SELECT DISTINCT
        CAST(se.ts as TIMESTAMP) as start_time,
        EXTRACT(HOUR from CAST(se.ts as TIMESTAMP)) as hour,
