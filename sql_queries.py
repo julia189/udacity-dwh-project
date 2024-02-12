@@ -19,7 +19,24 @@ time_table_drop = "DROP TABLE time IF EXISTS;"
 
 staging_events_table_create= ("""
 CREATE TABLE IF NOT EXISTS staging_events (
-                        
+        artist varchar,
+        auth varchar,
+        firstName varchar,
+        gender char,
+        iteminSession integer,
+        lastName varchar,
+        length float,
+        level varchar,
+        location varchar,
+        method varchar,
+        page varchar,
+        registration long,
+        sessionId integer,
+        song varchar,
+        status integer,
+        ts long,
+        userAgent varchar,
+        userId integer                
 )
 """)
 
@@ -34,7 +51,7 @@ CREATE TABLE IF NOT EXISTS songplays (
                          songplay_id varchar(32) NOT NULL PRIMARY KEY,
                          start_time date FOREIGN KEY REFERENCES time(start_time),  -- #TODO: partition key??
                          user_id varchar(32) FOREIGN KEY REFERENCES users(user_id),
-                         level int NOT NULL,
+                         level integer NOT NULL,
                          song_id varchar(32) FOREIGN KEY REFERENCES songs(song_id),
                          artist_id varchar(32)  FOREIGN KEY REFERENCES artis(artist_id),
                          session_id varchar(32) NOT NULL,
@@ -50,7 +67,7 @@ CREATE TABLE IF NOT EXISTS users (
                      first_name varchar(32) NOT NULL,
                      last_name varchar(32) NOT NULL,
                      gender varchar(5) NOT NULL,
-                     level int NOT NULL 
+                     level integer NOT NULL 
 
 );
 """)
@@ -60,8 +77,8 @@ CREATE TABLE IF NOT EXISTS songs (
                     song_id varchar(32) NOT NULL,
                     title varchar(32) NOT NULL,
                     artist_id varchar(32) NOT NULL,
-                    year int NOT NULL,
-                    duration int NOT NULL -- #TODO: check if float
+                    year integer NOT NULL,
+                    duration integer NOT NULL -- #TODO: check if float
 );
 """)
 
@@ -78,11 +95,11 @@ CREATE TABLE IF NOT EXISTS artist (
 time_table_create = ("""
 CREATE TABLE IF NOT EXISTS time (
                      start_time date NOT NULL PRIMARY KEY,
-                     hour int NOT NULL,
-                     day int NOT NULL,
-                     week int NOT NULL,
-                     month int NOT NULL,
-                     year int NOT NULL,
+                     hour integer NOT NULL,
+                     day integer NOT NULL,
+                     week integer NOT NULL,
+                     month integer NOT NULL,
+                     year integer NOT NULL,
                      weekday varchar(32) NOT NULL
 );
 """)
