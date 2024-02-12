@@ -160,3 +160,7 @@ cython_debug/
 #.idea/
 
 dwh.cfg
+dwh.cfg
+
+my_venv/
+dwh.cfg
