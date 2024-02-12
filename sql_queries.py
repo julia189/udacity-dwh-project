@@ -134,7 +134,7 @@ COPY staging_songs
 FROM {}
 IAM_ROLE {}
 FORMAT AS json 'auto';
-""").format(config['S3']['SONG_DATA'], config['IAM_ROLE']['ARN'], config['S3'])
+""").format(config['S3']['SONG_DATA'], config['IAM_ROLE']['ARN'])
 
 # FINAL TABLES
 
