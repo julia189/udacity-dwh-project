@@ -57,16 +57,17 @@ CREATE TABLE IF NOT EXISTS staging_songs (
 songplay_table_create = ("""
 CREATE TABLE IF NOT EXISTS songplays (
                          songplay_id varchar(32) NOT NULL PRIMARY KEY,
-                         start_time date FOREIGN KEY REFERENCES time(start_time),  -- #TODO: partition key??
-                         user_id varchar(32) FOREIGN KEY REFERENCES users(user_id),
+                         start_time date , 
+                         user_id varchar(32),
                          level integer NOT NULL,
-                         song_id varchar(32) FOREIGN KEY REFERENCES songs(song_id),
-                         artist_id varchar(32)  FOREIGN KEY REFERENCES artis(artist_id),
+                         song_id varchar(32),
+                         artist_id varchar(32)  ,
                          session_id varchar(32) NOT NULL,
                          location varchar(32) NOT NULL,
                          user_agent varchar(32) NOT NULL
 
-);
+)
+                        
 """)
 
 user_table_create = ("""
