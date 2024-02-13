@@ -159,8 +159,6 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-dwh.cfg
-dwh.cfg
-
 my_venv/
+
 dwh.cfg
