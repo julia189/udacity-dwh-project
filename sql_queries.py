@@ -98,8 +98,8 @@ artist_table_create = ("""
 CREATE TABLE IF NOT EXISTS artists (
                        artist_id VARCHAR(32) NOT NULL PRIMARY KEY,
                        location VARCHAR(32),
-                       latitude FLOAT,
-                       longitude FLOAT
+                       latitude VARCHAR,
+                       longitude VARCHAR
 )
 SORTKEY (artist_id);
 """)
