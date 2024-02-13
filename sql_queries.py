@@ -142,7 +142,7 @@ songplay_table_insert = ("""
     SELECT DISTINCT
         TIMESTAMP 'epoch' + (se.ts/1000 * INTERVAL '1 second') as start_time,
         se.userId as user_id,
-        se.level,
+        CAST(se.level as INTEGER),
         ss.song_id,
         ss.artist_id,
         se.sessionId as session_id,
