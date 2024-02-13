@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS songplays (
                          songplay_id INTEGER IDENTITY (100, 1) NOT NULL PRIMARY KEY,
                          start_time TIMESTAMP NOT NULL, 
                          user_id VARCHAR(32),
-                         level INTEGER,
+                         level VARCHAR(32),
                          song_id VARCHAR(32),
                          artist_id VARCHAR(32),
                          session_id VARCHAR(32),
@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS users (
                      first_name VARCHAR(32),
                      last_name VARCHAR(32),
                      gender CHAR(1),
-                     level INTEGER 
+                     level VARCHAR(32)
 )
 SORTKEY (user_id);
 """)
@@ -142,7 +142,7 @@ songplay_table_insert = ("""
     SELECT DISTINCT
         TIMESTAMP 'epoch' + (se.ts/1000 * INTERVAL '1 second') as start_time,
         se.userId as user_id,
-        CAST(se.level as INTEGER),
+        se.level,
         ss.song_id,
         ss.artist_id,
         se.sessionId as session_id,
