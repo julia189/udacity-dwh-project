@@ -19,38 +19,38 @@ time_table_drop = "DROP TABLE IF EXISTS time;"
 
 staging_events_table_create= ("""
 CREATE TABLE IF NOT EXISTS staging_events (
-        artist VARCHAR(100),
-        auth VARCHAR(10),
-        firstName VARCHAR(100),
+        artist VARCHAR,
+        auth VARCHAR,
+        firstName VARCHAR,
         gender CHAR(1),
         itemInSession INTEGER,
-        lastName VARCHAR(100),
+        lastName VARCHAR,
         length FLOAT,
-        level VARCHAR(10),
-        location VARCHAR(100),
-        method VARCHAR(10),
-        page VARCHAR(100),
+        level VARCHAR,
+        location VARCHAR,
+        method VARCHAR,
+        page VARCHAR,
         registration BIGINT,
         sessionId INTEGER,
-        song VARCHAR(100),
+        song VARCHAR,
         status INTEGER,
         ts BIGINT,
-        userAgent VARCHAR(100),
+        userAgent VARCHAR,
         userId INTEGER              
 )
 """)
 
 staging_songs_table_create = ("""
 CREATE TABLE IF NOT EXISTS staging_songs (
-        artist_id VARCHAR(20),
+        artist_id VARCHAR,
         artist_latitude FLOAT,
-        artist_location VARCHAR(100),
+        artist_location VARCHAR,
         artist_longitude FLOAT,
-        artist_name VARCHAR(100),
+        artist_name VARCHAR,
         duration FLOAT,
         num_songs INTEGER,
-        song_id VARCHAR(20),
-        title VARCHAR(100),
+        song_id VARCHAR,
+        title VARCHAR,
         year INTEGER
 )
 """)
@@ -140,7 +140,7 @@ FORMAT AS json 'auto';
 
 songplay_table_insert = ("""
     INSERT INTO songplays (start_time, user_id, level, song_id, artist_id, session_id, location, user_agent)
-    SELECT 
+    SELECT DISTINCT
         TIMESTAMP 'epoch' + (se.ts/1000 * INTERVAL '1 second') as start_time,
         se.userId as user_id,
         se.level,
@@ -157,15 +157,6 @@ songplay_table_insert = ("""
         ss.artist_name = se.artist 
     WHERE
         se.page = 'NextSong'
-    GROUP BY
-        TIMESTAMP 'epoch' + (se.ts/1000 * INTERVAL '1 second') as start_time,
-        se.userId,
-        se.level,
-        ss.song_id,
-        ss.artist_id,
-        se.sessionId,
-        se.location,
-        se.userAgent;
 """)
 
 
