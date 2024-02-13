@@ -140,7 +140,7 @@ FORMAT AS json 'auto';
 songplay_table_insert = ("""
     INSERT INTO songplays
     SELECT DISTINCT
-        CAST(se.ts as TIMESTAMP) as start_time,
+        TIMESTAMP 'epoch' + (se.ts/1000 * INTERVAL '1 second') as start_time,
         se.userId as user_id,
         se.level,
         ss.song_id,
