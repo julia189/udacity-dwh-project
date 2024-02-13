@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS songplays (
                          artist_id VARCHAR(32),
                          session_id VARCHAR(32),
                          location VARCHAR,
-                         user_agent VARCHAR(100)
+                         user_agent VARCHAR
 )
 DISTSTYLE KEY
 DISTKEY (start_time)
@@ -97,10 +97,10 @@ SORTKEY (song_id);
 artist_table_create = ("""
 CREATE TABLE IF NOT EXISTS artists (
                        artist_id VARCHAR(32) NOT NULL PRIMARY KEY,
-                       artist_name VARCHAR(100),
+                       artist_name VARCHAR,
                        location VARCHAR,
-                       latitude VARCHAR(100),
-                       longitude VARCHAR(100)
+                       latitude VARCHAR,
+                       longitude VARCHAR
 )
 SORTKEY (artist_id);
 """)
