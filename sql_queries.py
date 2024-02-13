@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS staging_events (
         gender CHAR,
         itemInSession INTEGER,
         lastName VARCHAR,
-        length float,
+        length FLOAT,
         level VARCHAR,
         location VARCHAR,
         method VARCHAR,
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS staging_events (
         status INTEGER,
         ts BIGINT,
         userAgent VARCHAR,
-         userId INTEGER              
+        userId INTEGER              
 )
 """)
 
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS staging_songs (
 
 songplay_table_create = ("""
 CREATE TABLE IF NOT EXISTS songplays (
-                         songplay_id INTEGER IDENTITY (1, 1) NOT NULL PRIMARY KEY,
+                         songplay_id VARCHAR(32) IDENTITY (100, 1) NOT NULL PRIMARY KEY,
                          start_time TIMESTAMP NOT NULL, 
                          user_id VARCHAR(32),
                          level INTEGER,
@@ -100,7 +100,6 @@ CREATE TABLE IF NOT EXISTS artists (
                        location VARCHAR(32),
                        latitude FLOAT,
                        longitude FLOAT
-                  
 )
 SORTKEY (artist_id);
 """)
@@ -165,7 +164,7 @@ user_table_insert = ("""
     SELECT DISTINCT
         se.userId as user_id,
         se.firstName as first_name,
-        se.last_name,
+        se.lastName as last_name,
         se.gender,
         se.level
     FROM staging_events as se
@@ -190,7 +189,7 @@ song_table_insert = ("""
     WHERE
         se.page = 'NextSong'  
     AND
-        ss,song_id IS NOT NULL;
+        ss.song_id IS NOT NULL;
 """)
 
 artist_table_insert = ("""
@@ -213,17 +212,20 @@ artist_table_insert = ("""
 
 time_table_insert = ("""
     INSERT INTO time
+    WITH start_time_formatted as (
+    SELECT TIMESTAMP 'epoch' + (ts/1000 * INTERVAL '1 second') as start_time
+    FROM staging_events
+    WHERE staging_events.page = 'NextSong'
+    )
     SELECT DISTINCT
-       CAST(se.ts as TIMESTAMP) as start_time,
-       EXTRACT(HOUR from CAST(se.ts as TIMESTAMP)) as hour,
-       EXTRACT(DAY from CAST(se.ts as TIMESTAMP)) as day,
-       EXTRACT(WEEK from CAST(se.ts as TIMESTAMP)) as week,
-       EXTRACT(MONTH from CAST(se.ts as TIMESTAMP)) as month,         
-       EXTRACT(YEAR from CAST(se.ts as TIMESTAMP)) as year,
-       EXTRACT(WEEKDAY from CAST(se.ts as TIMESTAMP)) as weekday              
-    FROM staging_events as se
-    WHERE 
-        se.page = 'NextSong';
+        start_time,
+        EXTRACT(HOUR from start_time) as hour,
+        EXTRACT(DAY from start_time) as day,
+        EXTRACT(WEEK from start_time) as week,
+        EXTRACT(MONTH from start_time) as month,         
+        EXTRACT(YEAR from start_time) as year,
+        EXTRACT(WEEKDAY from start_time) as weekday
+    FROM start_time_formatted 
 """)
 
 # QUERY LISTS
